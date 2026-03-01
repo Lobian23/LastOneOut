@@ -1,28 +1,4 @@
-# LAST ONE OUT --- FULL MASTER EXPORT (100% COMPLETE)
-
-This document contains ALL pinned project specifications and canonical
-code files. Nothing has been removed. All content is preserved verbatim.
-
-------------------------------------------------------------------------
-
-# SOURCE FILE: LAST_ONE_OUT_GENERAL.md
-
-# LAST ONE OUT --- PROJECT INDEX v6 (Challenge Architecture Added)
-
-Status: ACTIVE\
-Updated: 2026-02-23
-
-ALLGEMEINES GESETZ: ChatGPT ist über app mit Github verbunden. Github
-hat eine installierte ChatGPT App.
-
-ChatGPT kann IMMER und JEDERZEIT in die Repos schauen.
-
-Das wichtigste Repo ist LastOneOut.
-
-Darin befindet sich das file General.md Dieses File sofort auslesen und
-auf Updates prüfen. Für chat verlauf
-
-------------------------------------------------------------------------
+# LAST ONE OUT --- SPECS
 
 ## 🔴 CORE SPECS (Foundational --- Highest Authority)
 
