@@ -2,10 +2,10 @@
 
 ## 🔴 CORE SPECS (Foundational --- Highest Authority)
 
-1.  LAST_ONE_OUT_Gameplay_Spec_v2.md\
-2.  LAST_ONE_OUT_Gameplace_Architecture_v3.md\
-3.  LAST_ONE_OUT_Multi_Place_Spec_v3.md\
-4.  LAST_ONE_OUT_Project_Structure_v4.md
+1.  LAST_ONE_OUT_Gameplay_Spec.md\
+2.  LAST_ONE_OUT_Gameplace_Architecture_Spec.md\
+3.  LAST_ONE_OUT_Multi_Place_Spec.md\
+4.  LAST_ONE_OUT_Project_Structure_Spec.md
 
 Hierarchy: Gameplay \> Gameplace Architecture \> Multi-Place \>
 Structure
@@ -14,23 +14,23 @@ Structure
 
 ## 🟠 SYSTEM SPECS
 
--   LAST_ONE_OUT_UI_Spec_v2.md\
--   LAST_ONE_OUT_Lobby_System_Spec_v2.md\
--   LAST_ONE_OUT_Leaderboard_Spec_v2.md\
--   LAST_ONE_OUT_Points_Spec_v2.md\
--   LAST_ONE_OUT_Rank_Spec_v2.md\
--   LAST_ONE_OUT_Training_Spec_v2.md\
--   LAST_ONE_OUT_Localization_Spec_v3.1.md\
--   LAST_ONE_OUT_Challenge_Architecture_Spec_v1_DE.md
+-   LAST_ONE_OUT_UI_Spec.md\
+-   LAST_ONE_OUT_Lobby_System_Spec.md\
+-   LAST_ONE_OUT_Leaderboard_Spec.md\
+-   LAST_ONE_OUT_Points_Spec.md\
+-   LAST_ONE_OUT_Rank_Spec.md\
+-   LAST_ONE_OUT_Training_Spec.md\
+-   LAST_ONE_OUT_Localization_Spec.md\
+-   LAST_ONE_OUT_Challenge_Architecture_Spec.md
 
 ------------------------------------------------------------------------
 
 ## 🟡 TECHNICAL SPECS
 
--   LAST_ONE_OUT_Remote_Spec_v2.md\
--   LAST_ONE_OUT_Config_Spec_v3.md\
--   LAST_ONE_OUT_Coding_Style_v3.md\
--   LAST_ONE_OUT_Dev_Tools_Spec_v2.md\
+-   LAST_ONE_OUT_Remote_Spec.md\
+-   LAST_ONE_OUT_Config_Spec.md\
+-   LAST_ONE_OUT_Coding_Style_Spec.md\
+-   LAST_ONE_OUT_Dev_Tools_Spec.md\
 -   LAST_ONE_OUT_Codefiles_Spec.md
 
 ------------------------------------------------------------------------
@@ -48,13 +48,13 @@ Structure
 
 ------------------------------------------------------------------------
 
-END OF INDEX v6
+END OF INDEX 
 
 ------------------------------------------------------------------------
 
-# SOURCE FILE: LAST_ONE_OUT_PROJECT_INDEX_v6.md
+# SOURCE FILE: LAST_ONE_OUT_PROJECT_INDEX.md
 
-# LAST ONE OUT --- PROJECT INDEX v6 (Challenge Architecture Added)
+# LAST ONE OUT --- PROJECT INDEX
 
 Status: ACTIVE\
 Updated: 2026-02-23
@@ -63,10 +63,10 @@ Updated: 2026-02-23
 
 ## 🔴 CORE SPECS (Foundational --- Highest Authority)
 
-1.  LAST_ONE_OUT_Gameplay_Spec_v2.md\
-2.  LAST_ONE_OUT_Gameplace_Architecture_v3.md\
-3.  LAST_ONE_OUT_Multi_Place_Spec_v3.md\
-4.  LAST_ONE_OUT_Project_Structure_v4.md
+1.  LAST_ONE_OUT_Gameplay_Spec.md\
+2.  LAST_ONE_OUT_Gameplace_Architecture_Spec.md\
+3.  LAST_ONE_OUT_Multi_Place_Spec.md\
+4.  LAST_ONE_OUT_Project_Structure_Spec.md
 
 Hierarchy: Gameplay \> Gameplace Architecture \> Multi-Place \>
 Structure
@@ -75,23 +75,23 @@ Structure
 
 ## 🟠 SYSTEM SPECS
 
--   LAST_ONE_OUT_UI_Spec_v2.md\
--   LAST_ONE_OUT_Lobby_System_Spec_v2.md\
--   LAST_ONE_OUT_Leaderboard_Spec_v2.md\
--   LAST_ONE_OUT_Points_Spec_v2.md\
--   LAST_ONE_OUT_Rank_Spec_v2.md\
--   LAST_ONE_OUT_Training_Spec_v2.md\
--   LAST_ONE_OUT_Localization_Spec_v3.1.md\
--   LAST_ONE_OUT_Challenge_Architecture_Spec_v1_DE.md
+-   LAST_ONE_OUT_UI_Spec.md\
+-   LAST_ONE_OUT_Lobby_System_Spec.md\
+-   LAST_ONE_OUT_Leaderboard_Spec.md\
+-   LAST_ONE_OUT_Points_Spec.md\
+-   LAST_ONE_OUT_Rank_Spec.md\
+-   LAST_ONE_OUT_Training_Spec.md\
+-   LAST_ONE_OUT_Localization_Spec.md\
+-   LAST_ONE_OUT_Challenge_Architecture_Spec.md
 
 ------------------------------------------------------------------------
 
 ## 🟡 TECHNICAL SPECS
 
--   LAST_ONE_OUT_Remote_Spec_v2.md\
--   LAST_ONE_OUT_Config_Spec_v3.md\
--   LAST_ONE_OUT_Coding_Style_v3.md\
--   LAST_ONE_OUT_Dev_Tools_Spec_v2.md\
+-   LAST_ONE_OUT_Remote_Spec.md\
+-   LAST_ONE_OUT_Config_Spec.md\
+-   LAST_ONE_OUT_Coding_Style.md\
+-   LAST_ONE_OUT_Dev_Tools_Spec.md\
 -   LAST_ONE_OUT_Codefiles_Spec.md
 
 ------------------------------------------------------------------------
@@ -109,13 +109,13 @@ Structure
 
 ------------------------------------------------------------------------
 
-END OF INDEX v6
+END OF INDEX
 
 ------------------------------------------------------------------------
 
-# SOURCE FILE: LAST_ONE_OUT_Gameplay_Spec_v2_PATCHED.md
+# SOURCE FILE: LAST_ONE_OUT_Gameplay_Spec.md
 
-# LAST ONE OUT --- Gameplay Spec v2
+# LAST ONE OUT --- Gameplay Spec
 
 **Status:** ACTIVE\
 **Updated:** 2026-02-23
