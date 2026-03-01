@@ -882,6 +882,7 @@ Each Challenge MUST contain:
 
 -   A Folder named: Map
 -   A StringValue named: Description
+-   A ModuleScript named: Challenge.lua (contains the challenge logic and the interface)
 
 Optional:
 
@@ -2436,6 +2437,365 @@ function TeleportDataService.ResolveMode(player: Player): (boolean, ResolveResul
 end
 
 return TeleportDataService
+```
+
+-----------------------------------------------------------------
+## 3.1 ServerScriptService/Gameplace/Systems/ChallengeLoader.lua
+
+``` lua
+--!strict
+-- ServerScriptService/Gameplace/Systems/ChallengeLoader.lua
+-- Loads + validates challenge folders, enforces ID rules, clones active challenge into Workspace.
+-- Spec rules: folder name "NNN Name", Map folder required, Description StringValue required, ID unique.
+-- Also enforces: no challenge may be played twice (you track that in MatchFlow/Selector, not here).
+
+local Workspace = game:GetService("Workspace")
+
+local ChallengeLoader = {}
+
+export type ChallengeDef = {
+	id: number,
+	folderName: string,
+	sourceFolder: Folder,
+	descriptionKey: string,
+	hasStartPart: boolean,
+}
+
+export type LoadResult = {
+	byId: { [number]: ChallengeDef },
+	orderedIds: { number }, -- sorted ascending for deterministic selection
+}
+
+local DEFAULT_ROOT_PATH = "Challenges" -- Workspace/Challenges
+
+local function isDigits3(s: string): boolean
+	if #s < 3 then
+		return false
+	end
+	local a = s:sub(1, 3)
+	return a:match("^%d%d%d$") ~= nil
+end
+
+local function parseIdFromFolderName(folderName: string): (boolean, number?, string?)
+	if typeof(folderName) ~= "string" or folderName == "" then
+		return false, nil, "folderName invalid"
+	end
+
+	if not isDigits3(folderName) then
+		return false, nil, "folderName must start with 3 digits (NNN)"
+	end
+
+	local idStr = folderName:sub(1, 3)
+	local idNum = tonumber(idStr)
+	if idNum == nil then
+		return false, nil, "unable to parse numeric id"
+	end
+
+	-- ID 000 is technically numeric, but usually undesired; keep it allowed unless you want to ban it.
+	return true, idNum, nil
+end
+
+local function requireChildFolder(parent: Instance, name: string): (boolean, Folder?, string?)
+	local child = parent:FindFirstChild(name)
+	if child == nil then
+		return false, nil, ("missing required Folder '%s'"):format(name)
+	end
+	if not child:IsA("Folder") then
+		return false, nil, ("'%s' must be a Folder"):format(name)
+	end
+	return true, child, nil
+end
+
+local function requireChildStringValue(parent: Instance, name: string): (boolean, StringValue?, string?)
+	local child = parent:FindFirstChild(name)
+	if child == nil then
+		return false, nil, ("missing required StringValue '%s'"):format(name)
+	end
+	if not child:IsA("StringValue") then
+		return false, nil, ("'%s' must be a StringValue"):format(name)
+	end
+	return true, child, nil
+end
+
+local function validateChallengeFolder(folder: Folder): (boolean, ChallengeDef?, string?)
+	local okId, idNum, idErr = parseIdFromFolderName(folder.Name)
+	if not okId or idNum == nil then
+		return false, nil, ("[%s] %s"):format(folder.Name, tostring(idErr))
+	end
+
+	local okMap, _map, mapErr = requireChildFolder(folder, "Map")
+	if not okMap then
+		return false, nil, ("[%s] %s"):format(folder.Name, tostring(mapErr))
+	end
+
+	local okDesc, descValue, descErr = requireChildStringValue(folder, "Description")
+	if not okDesc or descValue == nil then
+		return false, nil, ("[%s] %s"):format(folder.Name, tostring(descErr))
+	end
+
+	local descriptionKey = descValue.Value
+	if typeof(descriptionKey) ~= "string" or descriptionKey == "" then
+		return false, nil, ("[%s] Description.Value must be a non-empty localization key"):format(folder.Name)
+	end
+
+	local start = folder:FindFirstChild("Start")
+	local hasStartPart = (start ~= nil and start:IsA("BasePart"))
+
+	local def: ChallengeDef = {
+		id = idNum,
+		folderName = folder.Name,
+		sourceFolder = folder,
+		descriptionKey = descriptionKey,
+		hasStartPart = hasStartPart,
+	}
+
+	return true, def, nil
+end
+
+local function getOrCreateFolder(parent: Instance, name: string): Folder
+	local existing = parent:FindFirstChild(name)
+	if existing and existing:IsA("Folder") then
+		return existing
+	end
+	if existing then
+		existing:Destroy()
+	end
+	local f = Instance.new("Folder")
+	f.Name = name
+	f.Parent = parent
+	return f
+end
+
+-- =========================
+-- Public API
+-- =========================
+
+-- Finds the root folder where your challenge templates live.
+-- Default: Workspace/Challenges (can be overridden by passing a Folder instance into LoadAll)
+function ChallengeLoader.GetDefaultRoot(): Folder?
+	local root = Workspace:FindFirstChild(DEFAULT_ROOT_PATH)
+	if root and root:IsA("Folder") then
+		return root
+	end
+	return nil
+end
+
+-- Loads + validates all challenges found under the given root folder.
+-- Returns a deterministic ordered list of IDs (ascending).
+function ChallengeLoader.LoadAll(rootFolder: Folder?): (boolean, LoadResult | string)
+	if rootFolder == nil then
+		rootFolder = ChallengeLoader.GetDefaultRoot()
+	end
+
+	if rootFolder == nil then
+		return false, ("Challenge root folder not found. Expected Workspace/%s"):format(DEFAULT_ROOT_PATH)
+	end
+
+	if not rootFolder:IsA("Folder") then
+		return false, "Challenge root is not a Folder"
+	end
+
+	local byId: { [number]: ChallengeDef } = {}
+	local orderedIds: { number } = {}
+
+	-- Deterministic enumeration: sort children by Name first
+	local children: {Instance} = rootFolder:GetChildren()
+
+	table.sort(children, function(a: Instance, b: Instance): boolean
+		return a.Name < b.Name
+	end)
+	
+	for _, child in ipairs(children) do
+		if child:IsA("Folder") then
+			local ok, def, err = validateChallengeFolder(child)
+			if not ok or def == nil then
+				return false, tostring(err)
+			end
+
+			if byId[def.id] ~= nil then
+				return false, ("Duplicate challenge id %03d found: '%s' and '%s'"):format(
+					def.id,
+					byId[def.id].folderName,
+					def.folderName
+				)
+			end
+
+			byId[def.id] = def
+			table.insert(orderedIds, def.id)
+		end
+	end
+
+	table.sort(orderedIds)
+
+	return true, {
+		byId = byId,
+		orderedIds = orderedIds,
+	}
+end
+
+-- Destroys the currently active challenge container in Workspace (safe no-op if missing).
+-- Default active container name: "ActiveChallenge"
+function ChallengeLoader.CleanupActive(activeContainerName: string?)
+	local name = activeContainerName or "ActiveChallenge"
+	local existing = Workspace:FindFirstChild(name)
+	if existing then
+		existing:Destroy()
+	end
+end
+
+-- Clones a challenge folder into Workspace under "ActiveChallenge" (or custom container),
+-- returns the cloned Folder.
+function ChallengeLoader.CloneToActive(def: ChallengeDef, activeContainerName: string?): Folder
+	local name = activeContainerName or "ActiveChallenge"
+
+	-- Ensure clean slate
+	ChallengeLoader.CleanupActive(name)
+
+	local container = getOrCreateFolder(Workspace, name)
+	local clone = def.sourceFolder:Clone()
+	clone.Parent = container
+	clone.Name = "Challenge" -- stable name inside container
+
+	return clone
+end
+
+-- Convenience: clones by id from a loaded result
+function ChallengeLoader.CloneIdToActive(loadResult: LoadResult, id: number, activeContainerName: string?): (boolean, Folder | string)
+	local def = loadResult.byId[id]
+	if def == nil then
+		return false, ("Unknown challenge id: %s"):format(tostring(id))
+	end
+
+	local cloned = ChallengeLoader.CloneToActive(def, activeContainerName)
+	return true, cloned
+end
+
+return ChallengeLoader
+```
+
+-----------------------------------------------------------------
+## 3.1 ServerScriptService/Gameplace/Systems/ChallengeSelector.lua
+
+``` lua
+--!strict
+-- ServerScriptService/Gameplace/Match/ChallengeSelector.lua
+-- Deterministic selector that guarantees: NO challenge is played twice per match.
+-- Works with ChallengeLoader.LoadAll() output (orderedIds list).
+-- Does NOT load/clone anything; it only chooses IDs.
+
+local ChallengeSelector = {}
+
+export type Selector = {
+	orderedIds: { number },
+	played: { [number]: boolean },
+	lastSelectedId: number?,
+}
+
+local function isNumber(n: any): boolean
+	return typeof(n) == "number" and n == n
+end
+
+local function validateOrderedIds(orderedIds: { number })
+	if typeof(orderedIds) ~= "table" then
+		error("orderedIds must be a table")
+	end
+
+	-- Ensure numeric and unique + sorted (ascending). We allow empty.
+	local seen: { [number]: boolean } = {}
+	local prev: number? = nil
+
+	for i, id in ipairs(orderedIds) do
+		if not isNumber(id) then
+			error(("orderedIds[%d] is not a number"):format(i))
+		end
+		if id < 0 then
+			error(("orderedIds[%d] must be >= 0"):format(i))
+		end
+		if seen[id] then
+			error(("orderedIds contains duplicate id: %s"):format(tostring(id)))
+		end
+		seen[id] = true
+
+		if prev ~= nil and id < prev then
+			error("orderedIds must be sorted ascending for determinism")
+		end
+		prev = id
+	end
+end
+
+-- Creates a selector for one match.
+-- orderedIds should be the ascending list from ChallengeLoader.LoadAll().orderedIds
+function ChallengeSelector.New(orderedIds: { number }): Selector
+	validateOrderedIds(orderedIds)
+
+	local selector: Selector = {
+		orderedIds = orderedIds,
+		played = {},
+		lastSelectedId = nil,
+	}
+
+	return selector
+end
+
+function ChallengeSelector.Reset(selector: Selector)
+	table.clear(selector.played)
+	selector.lastSelectedId = nil
+end
+
+function ChallengeSelector.MarkPlayed(selector: Selector, id: number)
+	if not isNumber(id) then
+		return
+	end
+	selector.played[id] = true
+end
+
+function ChallengeSelector.HasPlayed(selector: Selector, id: number): boolean
+	return selector.played[id] == true
+end
+
+function ChallengeSelector.GetPlayedCount(selector: Selector): number
+	local count = 0
+	for _, _ in pairs(selector.played) do
+		count += 1
+	end
+	return count
+end
+
+function ChallengeSelector.GetTotalCount(selector: Selector): number
+	return #selector.orderedIds
+end
+
+function ChallengeSelector.IsExhausted(selector: Selector): boolean
+	return ChallengeSelector.GetPlayedCount(selector) >= ChallengeSelector.GetTotalCount(selector)
+end
+
+-- Deterministically selects the next unplayed challenge ID.
+-- Strategy: choose the first unplayed ID in ascending order.
+-- Returns (true, id) or (false, reason)
+function ChallengeSelector.SelectNext(selector: Selector): (boolean, number | string)
+	for _, id in ipairs(selector.orderedIds) do
+		if selector.played[id] ~= true then
+			selector.lastSelectedId = id
+			return true, id
+		end
+	end
+
+	return false, "No unplayed challenges left (selector exhausted)"
+end
+
+-- Same as SelectNext, but also marks it played immediately.
+function ChallengeSelector.SelectAndMarkNext(selector: Selector): (boolean, number | string)
+	local ok, idOrReason = ChallengeSelector.SelectNext(selector)
+	if not ok then
+		return false, idOrReason
+	end
+
+	local id = idOrReason :: number
+	ChallengeSelector.MarkPlayed(selector, id)
+	return true, id
+end
+
+return ChallengeSelector
 ```
 
 # 4. SHARED CONFIG
