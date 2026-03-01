@@ -1,59 +1,5 @@
 # LAST ONE OUT --- SPECS
 
-## 🔴 CORE SPECS (Foundational --- Highest Authority)
-
-1.  LAST_ONE_OUT_Gameplay_Spec.md\
-2.  LAST_ONE_OUT_Gameplace_Architecture_Spec.md\
-3.  LAST_ONE_OUT_Multi_Place_Spec.md\
-4.  LAST_ONE_OUT_Project_Structure_Spec.md
-
-Hierarchy: Gameplay \> Gameplace Architecture \> Multi-Place \>
-Structure
-
-------------------------------------------------------------------------
-
-## 🟠 SYSTEM SPECS
-
--   LAST_ONE_OUT_UI_Spec.md\
--   LAST_ONE_OUT_Lobby_System_Spec.md\
--   LAST_ONE_OUT_Leaderboard_Spec.md\
--   LAST_ONE_OUT_Points_Spec.md\
--   LAST_ONE_OUT_Rank_Spec.md\
--   LAST_ONE_OUT_Training_Spec.md\
--   LAST_ONE_OUT_Localization_Spec.md\
--   LAST_ONE_OUT_Challenge_Architecture_Spec.md
-
-------------------------------------------------------------------------
-
-## 🟡 TECHNICAL SPECS
-
--   LAST_ONE_OUT_Remote_Spec.md\
--   LAST_ONE_OUT_Config_Spec.md\
--   LAST_ONE_OUT_Coding_Style_Spec.md\
--   LAST_ONE_OUT_Dev_Tools_Spec.md\
--   LAST_ONE_OUT_Codefiles_Spec.md
-
-------------------------------------------------------------------------
-
-## 🔒 GLOBAL RULES (Reminder)
-
--   Server is authoritative.\
--   Client renders only.\
--   No cross-place remote usage.\
--   TeleportData required for Gameplace start.\
--   UI text is Localization key-based.\
--   No magic numbers in gameplay logic (Config enforced).\
--   Gameplace entry point is exactly:\
-    ServerScriptService/Gameplace/Init/Bootstrap.server.lua
-
-------------------------------------------------------------------------
-
-END OF INDEX 
-
-------------------------------------------------------------------------
-
-# SOURCE FILE: LAST_ONE_OUT_PROJECT_INDEX.md
-
 # LAST ONE OUT --- PROJECT INDEX
 
 Status: ACTIVE\
