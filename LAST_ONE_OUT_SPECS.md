@@ -1250,11 +1250,15 @@ Self-Contained: YES (MANDATORY)
 10. ServerScriptService/Gameplace/Systems/TeleportDataService.lua
     FREEZED
 
+11. ServerScriptService/Gameplace/Systems/ChallengeLoader.lua
+
+12. ServerScriptService/Gameplace/Match/ChallengeSelector.lua
+
 ## SHARED --- Config (1)
 
-11. ServerStorage/Config/Config.lua FREEZED
+13. ServerStorage/Config/Config.lua FREEZED
 
-TOTAL: 11 CANONICAL FILES
+TOTAL: 13 CANONICAL FILES
 
 ------------------------------------------------------------------------
 
